@@ -1,4 +1,4 @@
-# Importing libraries
+# Imported libraries
 import requests # HTTP library for making requests to the Frost API
 import pandas as pd # Organizes and analyzes the weather data
 import yaml # Structures data into a .yml file for easy reading and sharing
@@ -7,14 +7,17 @@ import yaml # Structures data into a .yml file for easy reading and sharing
 with open('/Users/kachinaaschenberg/Documents/NMBU/INF201/Frost_API.txt', 'r') as infile:
     client_id = infile.read().strip()
 
-# Function to get data from Frost API and return a pandas DataFrame in YAML format
-def frost_request(client_id: str, # Client ID is a string that identifies the user to the Frost API
-                  sources: str,  # Station ID, e.g., 'SN17850'
-                  elements: str, # Element, e.g., 'mean(air_temperature P1D)'
-                  referencetime: str) -> pd.DataFrame: # Time range, e.g., '2025-01-01/2025-12-31'
+def frost_request(client_id: str, sources: str, elements: str, referencetime: str) -> pd.DataFrame: 
     '''
     Gets data from the Frost API and returns a pandas DataFrame in YAML format
     (same function as in Task 1, based on MET's Python example)
+    Args:
+        client_id (str): Client ID for the Frost API.
+        sources (str): Station ID, e.g., 'SN17850'.
+        elements (str): Element, e.g., 'mean(air_temperature P1D)'
+        referencetime (str): Time range, e.g., '2025-01-01/2025-12-31'.
+    Returns:
+        pd.DataFrame: DataFrame containing the requested data from the Frost API.
     '''
 
     # Define the endpoint and parameters for the API request
@@ -43,11 +46,13 @@ def frost_request(client_id: str, # Client ID is a string that identifies the us
     df['date'] = pd.to_datetime(df['date']) # Convert the 'date' column to datetime format for an easier analysis
     return df
 
-# Function to find heatwaves in the data (temp over 27 degrees for at least 5 days)
 def find_heatwaves(df: pd.DataFrame, threshold: float = 27.0, min_days: int = 5) -> list:
     '''
     Finds periods where the maximum temperature is >= threshold for at least min_days consecutive days
-   
+    Args:
+        df (pd.DataFrame): DataFrame containing the temperature data with 'date' and 'value' columns.
+        threshold (float): Temperature threshold to define a heatwave (default is 27.0 degrees).
+        min_days (int): Minimum number of consecutive days to define a heatwave (default is 5 days).
     Returns:
         list: List of (start_date, end_date) for each heatwave
     '''
@@ -67,17 +72,17 @@ def find_heatwaves(df: pd.DataFrame, threshold: float = 27.0, min_days: int = 5)
             heatwaves.append((period['date'].iloc[0], period['date'].iloc[-1])) # Append a tuple of (start_date, end_date) to the heatwaves list
     return heatwaves
 
-# Function to count heatwaves and write a summary to a YAML file
-def count_heatwaves(client_id: str, # Personal client ID for the Frost API
-                    station_id: str, # 'SN17850'
-                    station_name: str, # 'Ås'
-                    year: int, # 2025
-                    filename: str = None) -> int: # YAML file name 
+def count_heatwaves(client_id: str, station_id: str, station_name: str, year: int, filename: str = None) -> int: 
     '''
     Counts the number of heatwaves for a station in a given year and writes a summary to a YAML file
-    
+    Args:
+        client_id (str): Client ID for the Frost API.
+        station_id (str): Station ID, e.g., 'SN17850'.
+        station_name (str): Name of the station, e.g., 'Ås'.
+        year (int): Year for which to count heatwaves, e.g., 2025
+        filename (str): Optional filename for the YAML summary file. If None, a default name
     Returns:
-        int: Number of heatwaves
+        int: Number of heatwaves found for the specified station and year.
     '''
 
     # Get the maximum temperature data for the specified station and year
