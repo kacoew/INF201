@@ -69,10 +69,10 @@ def get_mean_temperature(client_id: str, station_id: str, year: int) -> pd.DataF
 
 def summary_table(data: dict[str, pd.DataFrame]) -> pd.DataFrame:
     '''
-    Makes a summary table with mean, median, min and max temperature for each year in the data dictionary.
+    Makes a summary table with mean, median, min and max temperature for each year in the dictionary.
 
     Args:
-        data (dict[str, pd.DataFrame]): Maps a label (e.g. '1925') to a DataFrame
+        data (dict[str, pd.DataFrame]): Maps a label like '1925' to a DataFrame
             with a 'value' column.
 
     Returns:
@@ -97,20 +97,20 @@ df_1925 = get_mean_temperature(client_id, 'SN17850', 1925)
 df_2025 = get_mean_temperature(client_id, 'SN17850', 2025)
 
 # Plot both years on the same calendar axis (month), so they can be compared 
-fig, ax = plt.subplots(figsize=(12, 5)) # Create a figure and axis for the plot with a specified size
-for df, year, colour in [(df_1925, 1925, 'tab:blue'), (df_2025, 2025, 'tab:red')]: # Iterate through each df, year and colour for plotting
-    same_year_dates = df['date'].apply(lambda d: d.replace(year=2000))  # same x-axis for both years
-    ax.plot(same_year_dates, df['value'], color=colour, label=str(year), linewidth=1.2) # Plot the temperature values against the modified dates with the specified colour and label for each year
+fig, ax = plt.subplots(figsize=(12, 5)) # Gives a figure and axis for the plot with a set size
+ax.plot(df_1925['date'].apply(lambda d: d.replace(year=2000)), df_1925['value'], color='tab:blue', label='1925', linewidth=1.2) # Plot the temperature values for each year with  color and label
+ax.plot(df_2025['date'].apply(lambda d: d.replace(year=2000)), df_2025['value'], color='tab:red', label='2025', linewidth=1.2) # Plot the temperature values for each year with color and label
 
-ax.xaxis.set_major_locator(mdates.MonthLocator()) # Set the x-axis to show major ticks at each month
-ax.xaxis.set_major_formatter(mdates.DateFormatter('%b')) # Format the x-axis labels to show the abbreviated month name (e.g., Jan, Feb, Mar)
+
+ax.xaxis.set_major_locator(mdates.MonthLocator()) # Set the x-axis to each month
+ax.xaxis.set_major_formatter(mdates.DateFormatter('%B')) # Format the x-axis labels to show the whole month name 
 ax.axhline(0, color='grey', linewidth=0.8)  # line at 0 °C 
 ax.set_title('Daily mean air temperature in Ås: 1925 vs 2025') # Set the title of the plot
 ax.set_xlabel('Month') # Set the label for the x-axis
 ax.set_ylabel('Temperature (°C)') # Set the label for the y-axis
 ax.grid(True, alpha=0.3) # Enable grid lines on the plot with a specified transparency
 ax.legend() # Add a legend to the plot to identify the lines for each year
-plt.tight_layout() # Adjust the layout of the plot to prevent overlapping elements
+plt.tight_layout() # Prevent overlapping elements
 plt.show() # Display the plot
 
 # Summary table for both years
